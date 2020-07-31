@@ -52,6 +52,74 @@ set(SDK_SOURCE_FILES
         ${NRF5_SDK_PATH}/external/freertos/source/timers.c
         ${NRF5_SDK_PATH}/components/libraries/timer/app_timer_freertos.c
 
+        # mbed TLS
+        ${NRF5_SDK_PATH}/external/mbedtls/library/aes.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/aesni.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/arc4.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/asn1parse.c
+        ${NRF5_SDK_PATH}/external/nrf_tls/mbedtls/replacements/asn1write.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/base64.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/bignum.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/blowfish.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/camellia.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/ccm.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/certs.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/cipher.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/cipher_wrap.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/cmac.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/ctr_drbg.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/debug.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/des.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/dhm.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/ecdh.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/ecdsa.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/ecp.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/ecp_curves.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/entropy.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/entropy_poll.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/error.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/gcm.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/havege.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/hmac_drbg.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/md.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/md2.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/md4.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/md5.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/md_wrap.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/memory_buffer_alloc.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/oid.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/padlock.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/pem.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/pk.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/pk_wrap.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/pkcs11.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/pkcs12.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/pkcs5.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/pkparse.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/pkwrite.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/platform.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/ripemd160.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/rsa.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/sha1.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/sha256.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/sha512.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/ssl_cache.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/ssl_ciphersuites.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/ssl_cli.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/ssl_cookie.c
+        ${NRF5_SDK_PATH}/external/nrf_tls/mbedtls/replacements/ssl_srv.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/ssl_ticket.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/ssl_tls.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/threading.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/version.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/version_features.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/x509.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/x509_create.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/x509_crl.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/x509_crt.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/x509_csr.c
+        ${NRF5_SDK_PATH}/external/mbedtls/library/xtea.c
+
         # Libs
         "${NRF5_SDK_PATH}/components/libraries/atomic/nrf_atomic.c"
         "${NRF5_SDK_PATH}/components/libraries/balloc/nrf_balloc.c"
@@ -479,7 +547,9 @@ include_directories(
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/include"
         "${NRF5_SDK_PATH}/modules/nrfx/hal"
         "${NRF5_SDK_PATH}/modules/nrfx/mdk"
-        ${NRF5_SDK_PATH}/external/freertos/source/include
+        "${NRF5_SDK_PATH}/external/freertos/source/include"
+        "${NRF5_SDK_PATH}/external/mbedtls/include"
+        "${NRF5_SDK_PATH}/external/nrf_tls/mbedtls/nrf_crypto/config"
         "${NRF5_SDK_PATH}/components/toolchain/cmsis/include"
         "${NRF5_SDK_PATH}/components/libraries/atomic"
         "${NRF5_SDK_PATH}/components/libraries/atomic_fifo"
@@ -552,6 +622,8 @@ add_definitions(-DNIMBLE_CFG_CONTROLLER)
 add_definitions(-DOS_CPUTIME_FREQ)
 add_definitions(-DNRF52 -DNRF52832 -DNRF52832_XXAA -DNRF52_PAN_74 -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040)
 add_definitions(-DFREERTOS)
+add_definitions(-DFLOAT_ABI_HARD)
+add_definitions(-DMBEDTLS_CONFIG_FILE=\"nrf_crypto_mbedtls_config.h\")
 add_definitions(-DDEBUG_NRF_USER)
 add_definitions(-D__STACK_SIZE=8192)
 add_definitions(-D__HEAP_SIZE=8192)
