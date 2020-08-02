@@ -357,6 +357,15 @@ set(LVGL_SRC
   libs/lvgl/src/lv_objx/lv_slider.c
   )
 
+
+set(MCUBOOT_SRC
+  mcuboot/flash_map.c
+  mcuboot/include/flash_map.h
+  mcuboot/include/mcuboot_config.template.h
+  mcuboot/include/sysflash.h
+  mcuboot/nrf52_boot-sysflash.c
+  )
+
 list(APPEND IMAGE_FILES
   DisplayApp/Icons/battery/os_battery_error.c
   DisplayApp/Icons/battery/os_battery_100.c
@@ -433,6 +442,7 @@ list(APPEND SOURCE_FILES
   ${TINYCRYPT_SRC}
   ${NIMBLE_SRC}
   ${LVGL_SRC}
+  ${MCUBOOT_SRC}
   #${IMAGE_FILES}
   ${SDK_SOURCE_FILES}
 
@@ -536,6 +546,7 @@ include_directories(
   libs/mynewt-nimble/nimble/host/services/gatt/include
   libs/mynewt-nimble/nimble/host/util/include
   libs/mynewt-nimble/nimble/host/store/ram/include
+  mcuboot/include
 
   "${NRF5_SDK_PATH}/components/drivers_nrf/nrf_soc_nosd"
         "${NRF5_SDK_PATH}/components"
