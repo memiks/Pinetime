@@ -99,22 +99,6 @@ void Process(void* instance) {
   gfx.Init();
   NRF_LOG_INFO("Init Done!")
 
-/*
-  NRF_LOG_INFO("Erasing...");
-  for (uint32_t erased = 0; erased < graphicSize; erased += 0x1000) {
-    spiNorFlash.SectorErase(erased);
-  }
-  NRF_LOG_INFO("Erase done!");
-
-  NRF_LOG_INFO("Writing graphic...");
-  static constexpr uint32_t memoryChunkSize = 200;
-  uint8_t writeBuffer[memoryChunkSize];
-  for(int offset = 0; offset < 115200; offset+=memoryChunkSize) {
-    std::memcpy(writeBuffer, &graphicBuffer[offset], memoryChunkSize);
-    spiNorFlash.Write(offset, writeBuffer, memoryChunkSize);
-  }
-  NRF_LOG_INFO("Writing graphic done!");
-*/
   NRF_LOG_INFO("Read memory and display the graphic...");
   static constexpr uint32_t screenWidth = 240;
   static constexpr uint32_t screenWidthInBytes = screenWidth*2; // LCD display 16bits color (1 pixel = 2 bytes)
@@ -127,20 +111,7 @@ void Process(void* instance) {
     }
   }
 
-  NRF_LOG_INFO("Done!");
-
-  while(1) {
-    asm("nop" );
-  }
-}
-
-int main(void) {
-  TaskHandle_t taskHandle;
-
-  logger.Init();
-  nrf_drv_clock_init();
-
-
+  NRF_LOG_INFO("Init Relocation...");
   //  Init the Board Support Package.
   //hal_bsp_init();
 
@@ -166,6 +137,19 @@ int main(void) {
 
   //  Should never come here.
   //return 0;
+
+  NRF_LOG_INFO("Done!");
+
+  while(1) {
+    asm("nop" );
+  }
+}
+
+int main(void) {
+  TaskHandle_t taskHandle;
+
+  logger.Init();
+  nrf_drv_clock_init();
 
   if (pdPASS != xTaskCreate(Process, "MAIN", 512, nullptr, 0, &taskHandle))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
@@ -193,19 +177,11 @@ static void relocate_vector_table(void *vector_table, void *relocated_vector_tab
     }
     //  If we need to copy the vectors, erase the flash ROM and write the vectors.
     if (vector_diff) {
-      /*
-        hal_flash_erase(  //  Erase...
-            0,            //  Internal Flash ROM
-            (uint32_t) relocated_vector_table,  //  At the relocated address
-            0x100         //  Assume that we erase an entire page
-        );
-        hal_flash_write(  //  Write...
-            0,            //  Internal Flash ROM
-            (uint32_t) relocated_vector_table,  //  To the relocated address
-            vector_table, //  From the original address
-            0x100         //  Assume that we copy an entire page
-        );
-      */  
+      NRF_LOG_INFO("Erasing...");
+      spiNorFlash.SectorErase(relocated_vector_table);
+      NRF_LOG_INFO("Erase done!");
+      
+      spiNorFlash.Write((uint32_t) relocated_vector_table, 0x100);
     }
     //  Point VTOR Register in the System Control Block to the relocated vector table.
     *SCB_VTOR = (uint32_t) relocated_vector_table;
