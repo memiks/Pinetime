@@ -13,6 +13,14 @@ steps:
   - mkdir build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_JLINK=0 -DNRFJPROG='/opt/nrfjprog/nrfjprog' -DARM_NONE_EABI_TOOLCHAIN_PATH="$${ARM_NONE_EABI_TOOLCHAIN_PATH}" -DNRF5_SDK_PATH="$${NRF5_SDK_PATH}" ../
+- name: generate pinetime-mcuboot
+  image: pinetime-compiler:latest
+  pull: if-not-exists
+  commands:
+  - export CLICOLOR_FORCE=1
+  - export NPROC_MAX=`nproc`
+  - cd build
+  - make -j$${NPROC_MAX} pinetime-mcuboot
 - name: generate pinetime-mcuboot-app
   image: pinetime-compiler:latest
   pull: if-not-exists

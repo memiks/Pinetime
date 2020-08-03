@@ -442,7 +442,7 @@ list(APPEND SOURCE_FILES
   ${TINYCRYPT_SRC}
   ${NIMBLE_SRC}
   ${LVGL_SRC}
-  ${MCUBOOT_SRC}
+  #${MCUBOOT_SRC}
   #${IMAGE_FILES}
   ${SDK_SOURCE_FILES}
 
@@ -452,6 +452,28 @@ list(APPEND SOURCE_FILES
 
   SystemTask/SystemTask.cpp
     drivers/TwiMaster.cpp
+)
+
+list(APPEND BOOTLOADER_SOURCE_FILES
+    ${SDK_SOURCE_FILES}
+    ${TINYCRYPT_SRC}
+    ${MCUBOOT_SRC}
+
+    # FreeRTOS
+    FreeRTOS/port.c
+    FreeRTOS/port_cmsis_systick.c
+    FreeRTOS/port_cmsis.c
+
+    drivers/SpiNorFlash.cpp
+    drivers/SpiMaster.cpp
+    drivers/Spi.cpp
+    Logging/NrfLogger.cpp
+
+    Components/Gfx/Gfx.cpp
+    drivers/St7789.cpp
+    Components/Brightness/BrightnessController.cpp
+
+    bootloader.cpp
 )
 
 list(APPEND GRAPHICS_SOURCE_FILES
@@ -697,6 +719,32 @@ add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_MCUBOOT_NAME}.out "${EXECUTABLE_MCUBOOT_NAME}.hex"
         COMMENT "post build steps for ${EXECUTABLE_MCUBOOT_NAME}"
 )
+
+# Build MCUBoot binary bootloader
+set(EXECUTABLE_BOOTLOADER_NAME "pinetime-mcuboot")
+add_executable(${EXECUTABLE_BOOTLOADER_NAME} ${BOOTLOADER_SOURCE_FILES})
+target_compile_options(${EXECUTABLE_BOOTLOADER_NAME} PUBLIC
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+    $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+    )
+
+set_target_properties(${EXECUTABLE_BOOTLOADER_NAME} PROPERTIES
+    SUFFIX ".out"
+    LINK_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_BOOTLOADER_NAME}.map"
+    CXX_STANDARD 11
+    C_STANDARD 99
+    )
+
+add_custom_command(TARGET ${EXECUTABLE_BOOTLOADER_NAME}
+    POST_BUILD
+    COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_BOOTLOADER_NAME}.out
+    COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_BOOTLOADER_NAME}.out "${EXECUTABLE_BOOTLOADER_NAME}.bin"
+    COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_BOOTLOADER_NAME}.out "${EXECUTABLE_BOOTLOADER_NAME}.hex"
+    COMMENT "post build steps for ${EXECUTABLE_BOOTLOADER_NAME}"
+    )
 
 # Build binary that writes the graphic assets for the bootloader
 set(EXECUTABLE_GRAPHICS_NAME "pinetime-graphics")
