@@ -1,0 +1,89 @@
+kind: pipeline
+type: docker
+name: Compilation of RIOT-OS for PineTime
+
+workspace:
+  path: /drone/src
+
+steps:
+- name: generate cmake config
+  image: pinetime-compiler:latest
+  pull: if-not-exists
+  commands:
+  - mkdir build
+  - cd build
+  - cmake -DCMAKE_BUILD_TYPE=Debug -DUSE_JLINK=0 -DNRFJPROG='/opt/nrfjprog/nrfjprog' -DARM_NONE_EABI_TOOLCHAIN_PATH="$${ARM_NONE_EABI_TOOLCHAIN_PATH}" -DNRF5_SDK_PATH="$${NRF5_SDK_PATH}" ../
+- name: generate pinetime-mcuboot-app
+  image: pinetime-compiler:latest
+  pull: if-not-exists
+  commands:
+  - export CLICOLOR_FORCE=1
+  - export NPROC_MAX=`nproc`
+  - cd build
+  - make -j$${NPROC_MAX} pinetime-mcuboot-app
+- name: generate pinetime-app
+  image: pinetime-compiler:latest
+  pull: if-not-exists
+  commands:
+  - export CLICOLOR_FORCE=1
+  - export NPROC_MAX=`nproc`
+  - cd build
+  - make -j$${NPROC_MAX} pinetime-app
+- name: generate pinetime-graphics
+  image: pinetime-compiler:latest
+  pull: if-not-exists
+  commands:
+  - export CLICOLOR_FORCE=1
+  - export NPROC_MAX=`nproc`
+  - cd build
+  - make -j$${NPROC_MAX} pinetime-graphics
+- name: generate image and DFU packages
+  image: python:slim
+  pull: if-not-exists
+  commands:
+  - apt-get update
+  - apt-get install -y wget unzip
+  - cd build/src
+  - wget https://codeload.github.com/JuulLabs-OSS/mcuboot/zip/master -O mcuboot-master.zip
+  - unzip mcuboot-master.zip && rm mcuboot-master.zip
+  - pip install -r ./mcuboot-master/scripts/requirements.txt
+  - pip install adafruit-nrfutil
+  - ./mcuboot-master/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header pinetime-mcuboot-app.bin pinetime-mcuboot-app-image.bin 
+  - adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application pinetime-mcuboot-app-image.bin pinetime-mcuboot-app-dfu.zip
+  - rm -rf mcuboot-master
+- name: share artifacts
+  image: alpine/git
+  volumes:
+  - name: data
+    path: /data
+  pull: if-not-exists
+  commands:
+  - apk update
+  - apk add --no-cache zip alpine-conf
+  - setup-timezone -z Asia/Tokyo 
+  - export DATE="$(date +%F)"
+  - BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
+  - cd build/src/
+  - mkdir -p /data/pinetime/$${BRANCH_NAME}/$${DATE}
+  - cp -f *.bin /data/pinetime/$${BRANCH_NAME}/$${DATE}/
+  - cp -f *.zip /data/pinetime/$${BRANCH_NAME}/$${DATE}/
+  - cp -f *.hex /data/pinetime/$${BRANCH_NAME}/$${DATE}/
+  - cp -f *.out /data/pinetime/$${BRANCH_NAME}/$${DATE}/
+  - cp -f *.map /data/pinetime/$${BRANCH_NAME}/$${DATE}/
+- name: send telegram notification
+  image: appleboy/drone-telegram
+  settings:
+    token:
+      from_secret: telegram_token
+    to:
+      from_secret: telegram_to
+    format: markdown
+  when:
+    status:
+    - failure
+    - success
+
+volumes:
+  - name: data
+    host:
+      path: /var/lib/docker/volumes/nginx-web/_data
