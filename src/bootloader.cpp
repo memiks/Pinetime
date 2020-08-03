@@ -10,6 +10,7 @@
 #include <legacy/nrf_drv_gpiote.h>
 #include <libraries/gpiote/app_gpiote.h>
 #include <hal/nrf_wdt.h>
+#include <flash_map.h>
 #include <cstring>
 #include <Components/Gfx/Gfx.h>
 #include <drivers/St7789.h>
@@ -141,7 +142,7 @@ int main(void) {
 
 
   //  Init the Board Support Package.
-  hal_bsp_init();
+  //hal_bsp_init();
 
   //  Previously: flash_map_init();
   //  Previously: rc = boot_go(&rsp);
@@ -192,6 +193,7 @@ static void relocate_vector_table(void *vector_table, void *relocated_vector_tab
     }
     //  If we need to copy the vectors, erase the flash ROM and write the vectors.
     if (vector_diff) {
+      /*
         hal_flash_erase(  //  Erase...
             0,            //  Internal Flash ROM
             (uint32_t) relocated_vector_table,  //  At the relocated address
@@ -202,7 +204,8 @@ static void relocate_vector_table(void *vector_table, void *relocated_vector_tab
             (uint32_t) relocated_vector_table,  //  To the relocated address
             vector_table, //  From the original address
             0x100         //  Assume that we copy an entire page
-        );  
+        );
+      */  
     }
     //  Point VTOR Register in the System Control Block to the relocated vector table.
     *SCB_VTOR = (uint32_t) relocated_vector_table;

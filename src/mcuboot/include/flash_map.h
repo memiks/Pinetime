@@ -126,6 +126,8 @@ int     flash_area_id_from_multi_image_slot(int image_index, int slot);
     `fa_id` in the `flash_area` struct. */
 int     flash_area_id_to_multi_image_slot(int image_index, int area_id);
 
+void __attribute__((naked)) hal_system_start(void *img_start);
+
 #ifdef __cplusplus
 }
 #endif

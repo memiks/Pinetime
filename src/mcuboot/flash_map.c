@@ -99,3 +99,21 @@ int     flash_area_id_from_multi_image_slot(int image_index, int slot) { return 
     `fa_id` in the `flash_area` struct. */
 int     flash_area_id_to_multi_image_slot(int image_index, int area_id) { return -1; }
 
+/**
+ * Boots the image described by the supplied image header.
+ *
+ * @param hdr                   The header for the image to boot.
+ */
+void __attribute__((naked))
+hal_system_start(void *img_start)
+{
+    uint32_t *img_data = img_start;
+
+    asm volatile (".syntax unified        \n"
+                  /* 1st word is stack pointer */
+                  "    msr  msp, %0       \n"
+                  /* 2nd word is a reset handler (image entry) */
+                  "    bx   %1            \n"
+                  : /* no output */
+                  : "r" (img_data[0]), "r" (img_data[1]));
+}
