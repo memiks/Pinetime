@@ -178,10 +178,10 @@ static void relocate_vector_table(void *vector_table, void *relocated_vector_tab
     //  If we need to copy the vectors, erase the flash ROM and write the vectors.
     if (vector_diff) {
       NRF_LOG_INFO("Erasing...");
-      spiNorFlash.SectorErase(relocated_vector_table);
+      spiNorFlash.SectorErase((uint32_t) relocated_vector_table);
       NRF_LOG_INFO("Erase done!");
       
-      spiNorFlash.Write((uint32_t) relocated_vector_table, 0x100);
+      spiNorFlash.Write((uint32_t) relocated_vector_table, new_location, 0x100);
     }
     //  Point VTOR Register in the System Control Block to the relocated vector table.
     *SCB_VTOR = (uint32_t) relocated_vector_table;
