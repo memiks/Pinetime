@@ -89,11 +89,11 @@ steps:
   - BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
   - cd build/src/
   - mkdir -p /data/pinetime/$${BRANCH_NAME}/$${DATE}
-  - cp -f *.bin /data/pinetime/$${BRANCH_NAME}/$${DATE}/
-  - cp -f *.zip /data/pinetime/$${BRANCH_NAME}/$${DATE}/
-  - cp -f *.hex /data/pinetime/$${BRANCH_NAME}/$${DATE}/
-  - cp -f *.out /data/pinetime/$${BRANCH_NAME}/$${DATE}/
-  - cp -f *.map /data/pinetime/$${BRANCH_NAME}/$${DATE}/
+  - cp -f *.bin /data/pinetime/$${BRANCH_NAME}/$${DATE}/ || /bin/true
+  - cp -f *.zip /data/pinetime/$${BRANCH_NAME}/$${DATE}/ || /bin/true
+  - cp -f *.hex /data/pinetime/$${BRANCH_NAME}/$${DATE}/ || /bin/true
+  - cp -f *.out /data/pinetime/$${BRANCH_NAME}/$${DATE}/ || /bin/true
+  - cp -f *.map /data/pinetime/$${BRANCH_NAME}/$${DATE}/ || /bin/true
 - name: send telegram notification
   image: appleboy/drone-telegram
   settings:
