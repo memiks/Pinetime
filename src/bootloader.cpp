@@ -172,17 +172,15 @@ static void relocate_vector_table(void *vector_table, void *relocated_vector_tab
     int vector_diff = 0;  //  Non-zero if a vector is different
     for (int i = 0; i < NVIC_NUM_VECTORS; i++) {
         if (new_location[i] != current_location[i]) {
+            //  If we need to copy the vectors, erase the flash ROM and write the vectors.
+            NRF_LOG_INFO("Erasing...");
+            Pinetime::Drivers::InternalFlash::ErasePage((uint32_t) &new_location[i]);
+            NRF_LOG_INFO("Erase done!");
+            
+            Pinetime::Drivers::InternalFlash::WriteWord((uint32_t) &new_location[i], (uint32_t) current_location[i]);
             vector_diff = 1;
             break;
         }
-    }
-    //  If we need to copy the vectors, erase the flash ROM and write the vectors.
-    if (vector_diff) {
-      NRF_LOG_INFO("Erasing...");
-      Pinetime::Drivers::InternalFlash::ErasePage((uint32_t) relocated_vector_table);
-      NRF_LOG_INFO("Erase done!");
-      
-      Pinetime::Drivers::InternalFlash::WriteWord(new_location, (uint32_t) relocated_vector_table);
     }
     //  Point VTOR Register in the System Control Block to the relocated vector table.
     *SCB_VTOR = (uint32_t) relocated_vector_table;
