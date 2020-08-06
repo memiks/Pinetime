@@ -467,6 +467,7 @@ list(APPEND BOOTLOADER_SOURCE_FILES
     drivers/SpiNorFlash.cpp
     drivers/SpiMaster.cpp
     drivers/Spi.cpp
+    drivers/InternalFlash.cpp
     Logging/NrfLogger.cpp
 
     Components/Gfx/Gfx.cpp
