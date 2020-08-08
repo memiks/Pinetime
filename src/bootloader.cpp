@@ -177,6 +177,7 @@ static void relocate_vector_table(void *vector_table, void *relocated_vector_tab
             Pinetime::Drivers::InternalFlash::ErasePage((uint32_t) &new_location[i]);
             NRF_LOG_INFO("Erase done!");
             
+            NRF_LOG_INFO("Writing new_location[%s]=%s...",NRF_LOG_PUSH(i),NRF_LOG_PUSH(&new_location[i]));
             Pinetime::Drivers::InternalFlash::WriteWord((uint32_t) &new_location[i], (uint32_t) current_location[i]);
             vector_diff = 1;
             break;
